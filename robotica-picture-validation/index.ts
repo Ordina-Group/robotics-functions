@@ -1,4 +1,6 @@
+import { ComputerVisionClient } from "@azure/cognitiveservices-computervision";
 import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import { ApiKeyCredentials } from "@azure/ms-rest-js";
 import HTTP_CODES from "http-status-enum";
 import * as multipart from "parse-multipart";
 
@@ -10,6 +12,13 @@ const ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png"];
 const MAX_FILE_SIZE = 6 * MBYTE;
 
 const httpTrigger: AzureFunction = async function (
+  context: Context,
+  req: HttpRequest
+): Promise<any> {
+  return validateAndStorePicture(context, req);
+};
+
+const validateAndStorePicture: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<any> {
@@ -93,7 +102,10 @@ const httpTrigger: AzureFunction = async function (
     context.bindings.storage = parts[0]?.data;
 
     // returned to requestor
-    context.res.body = `${req.query?.robotName}/${req.query?.filename}`;
+    const filePath = `https://roboticastorage.blob.core.windows.net/${req.query?.robotName}/${req.query?.filename}`;
+    context.log(`Image saved as ${filePath}`);
+
+    context.res.body = await gatherComputerVisionResult(filePath);
   } catch (err) {
     context.log.error(err.message);
     {
@@ -102,6 +114,19 @@ const httpTrigger: AzureFunction = async function (
     }
   }
   return context.res;
+};
+
+const gatherComputerVisionResult = async (filePath: string) => {
+  const key = process.env.COGNITIVE_API_KEY;
+  const endpoint = process.env.COGNITIVE_API_URL;
+
+  const computerVisionClient = new ComputerVisionClient(
+    // @ts-ignore
+    new ApiKeyCredentials({ inHeader: { "Ocp-Apim-Subscription-Key": key } }),
+    endpoint
+  );
+
+  return computerVisionClient.detectObjects(filePath);
 };
 
 export default httpTrigger;
