@@ -2,14 +2,21 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import HTTP_CODES from "http-status-enum";
 import * as multipart from "parse-multipart";
 
+const BYTE = 1;
+const KBYTE = 1024 * BYTE;
+const MBYTE = 1024 * KBYTE;
+
+const ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png"];
+const MAX_FILE_SIZE = 6 * MBYTE;
+
 const httpTrigger: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<any> {
   context.log("upload HTTP trigger function processed a request.");
 
-  if (!req.query?.username) {
-    context.res.body = `username is not defined`;
+  if (!req.query?.robotName) {
+    context.res.body = `robotName is not defined`;
     context.res.status = HTTP_CODES.BAD_REQUEST;
   }
 
@@ -24,14 +31,15 @@ const httpTrigger: AzureFunction = async function (
     context.res.status = HTTP_CODES.BAD_REQUEST;
   }
 
-  // Content type is required to know how to parse multi-part form
-  if (!req.headers || !req.headers["content-type"]) {
+  const contentType = req.headers["content-type"];
+
+  if (!req.headers || !contentType) {
     context.res.body = `Content type is not sent in header 'content-type'`;
     context.res.status = HTTP_CODES.BAD_REQUEST;
   }
 
   context.log(
-    `*** Username:${req.query?.username}, Filename:${req.query?.filename}, Content type:${req.headers["content-type"]}, Length:${req.body.length}`
+    `*** RobotName:${req.query?.robotName}, Filename:${req.query?.filename}, Content type:${contentType}, Length:${req.body.length}`
   );
 
   if (
@@ -47,7 +55,7 @@ const httpTrigger: AzureFunction = async function (
   try {
     // Each chunk of the file is delimited by a special string
     const bodyBuffer = Buffer.from(req.body);
-    const boundary = multipart.getBoundary(req.headers["content-type"]);
+    const boundary = multipart.getBoundary(contentType);
     const parts = multipart.Parse(bodyBuffer, boundary);
 
     // The file buffer is corrupted or incomplete ?
@@ -62,11 +70,30 @@ const httpTrigger: AzureFunction = async function (
     if (parts[0]?.type) console.log(`Content type = ${parts[0]?.type}`);
     if (parts[0]?.data?.length) console.log(`Size = ${parts[0]?.data?.length}`);
 
+    // check for allowed file type
+    const isAllowedContentType = ALLOWED_CONTENT_TYPES.includes(parts[0]?.type);
+    if (!isAllowedContentType) {
+      context.res.body = `Content type is not in allowed set: ${ALLOWED_CONTENT_TYPES.join(
+        ", "
+      )}`;
+      context.res.status = HTTP_CODES.BAD_REQUEST;
+      return context.res;
+    }
+
+    // check for allowed file size
+    if (parts[0]?.data?.length > MAX_FILE_SIZE) {
+      context.res.body = `File size exceeds limit of ${
+        MAX_FILE_SIZE / MBYTE
+      }MB`;
+      context.res.status = HTTP_CODES.BAD_REQUEST;
+      return context.res;
+    }
+
     // Passed to Storage
     context.bindings.storage = parts[0]?.data;
 
     // returned to requestor
-    context.res.body = `${req.query?.username}/${req.query?.filename}`;
+    context.res.body = `${req.query?.robotName}/${req.query?.filename}`;
   } catch (err) {
     context.log.error(err.message);
     {
