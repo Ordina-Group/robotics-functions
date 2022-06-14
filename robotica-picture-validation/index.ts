@@ -105,26 +105,7 @@ const validateAndStorePicture: AzureFunction = async function (
     const filePath = `https://roboticastorage.blob.core.windows.net/${req.query?.robotName}/${req.query?.filename}`;
     context.log(`Image saved as ${filePath}`);
 
-    try {
-      const key = process.env.COGNITIVE_API_KEY;
-      const endpoint = process.env.COGNITIVE_API_URL;
-
-      const computerVisionClient = new ComputerVisionClient(
-        // @ts-ignore
-        new ApiKeyCredentials({
-          inHeader: { "Ocp-Apim-Subscription-Key": key },
-        }),
-        endpoint
-      );
-
-      context.res.body = await computerVisionClient.detectObjects(filePath);
-    } catch (e) {
-      context.res.body = e.message;
-    }
-
-    // return computerVisionClient.detectObjects(filePath);
-
-    // context.res.body = filePath; //await computerVisionClient.detectObjects(filePath);
+    context.res.body = await gatherComputerVisionResult(filePath)
   } catch (err) {
     context.log.error(err.message);
     {
@@ -135,17 +116,17 @@ const validateAndStorePicture: AzureFunction = async function (
   return context.res;
 };
 
-// const gatherComputerVisionResult = async (filePath: string) => {
-//   const key = process.env.COGNITIVE_API_KEY;
-//   const endpoint = process.env.COGNITIVE_API_URL;
+const gatherComputerVisionResult = async (filePath: string) => {
+  const key = process.env.COGNITIVE_API_KEY;
+  const endpoint = process.env.COGNITIVE_API_URL;
 
-//   const computerVisionClient = new ComputerVisionClient(
-//     // @ts-ignore
-//     new ApiKeyCredentials({ inHeader: { "Ocp-Apim-Subscription-Key": key } }),
-//     endpoint
-//   );
+  const computerVisionClient = new ComputerVisionClient(
+    // @ts-ignore
+    new ApiKeyCredentials({ inHeader: { "Ocp-Apim-Subscription-Key": key } }),
+    endpoint
+  );
 
-//   return computerVisionClient.detectObjects(filePath);
-// };
+  return computerVisionClient.detectObjects(filePath);
+};
 
 export default httpTrigger;
