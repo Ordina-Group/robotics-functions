@@ -187,7 +187,7 @@
     "uuid" "^3.2.1"
     "xml2js" "^0.4.19"
 
-"@azure/ms-rest-js@^2.0.4":
+"@azure/ms-rest-js@^2.0.4", "@azure/ms-rest-js@^2.6.1":
   "integrity" "sha512-LLi4jRe/qy5IM8U2CkoDgSZp2OH+MgDe2wePmhz8uY84Svc53EhHaamVyoU6BjjHBxvCRh1vcD1urJDccrxqIw=="
   "resolved" "https://registry.npmjs.org/@azure/ms-rest-js/-/ms-rest-js-2.6.1.tgz"
   "version" "2.6.1"
@@ -1224,7 +1224,7 @@
     "side-channel" "^1.0.4"
 
 "ip-regex@^2.1.0":
-  "integrity" "sha1-+ni/XS5pE8kRzp+BnuUUa7bYROk="
+  "integrity" "sha512-58yWmlHpp7VYfcdTwMTvwMmqx/Elfxjd9RXTDyMsbL7lLWmhMylLEqiYVLKuLzOZqVgiWXD9MfR62Vv89VRxkw=="
   "resolved" "https://registry.npmjs.org/ip-regex/-/ip-regex-2.1.0.tgz"
   "version" "2.1.0"
 

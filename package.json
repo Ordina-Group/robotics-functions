@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@azure/cognitiveservices-computervision": "^8.2.0",
+    "@azure/ms-rest-js": "^2.6.1",
     "@types/parse-multipart": "^1.0.0",
     "http-status-enum": "^1.0.2",
     "ms-rest-azure": "^3.0.2",
