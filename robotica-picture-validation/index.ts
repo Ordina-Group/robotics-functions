@@ -19,16 +19,15 @@ const validateAndStorePicture: AzureFunction = async function (
 
   try {
     validateRequest(req);
+    const filePath = await uploadPhoto(req, req.headers["content-type"], context);
+    const result = await gatherComputerVisionResult(filePath);
 
-    const filePath = uploadPhoto(req, req.headers["content-type"], context);
-    context.res.body = await gatherComputerVisionResult(filePath);
-    context.res.contentType = "application/json";
+    context.res.body = result;
   } catch (err) {
     context.log.error(err.message);
-    {
-      context.res.body = `${err.message}`;
-      context.res.status = HTTP_CODES.INTERNAL_SERVER_ERROR;
-    }
+
+    context.res.body = `${err.message}`;
+    context.res.status = HTTP_CODES.INTERNAL_SERVER_ERROR;
   }
   return context.res;
 };
@@ -47,9 +46,9 @@ const validateRequest = (req: HttpRequest) => {
     throw new Error(`Request body is not defined`);
   }
 
-  const contentType = req.headers["content-type"];
+  const contentType = (req?.headers && req?.headers["content-type"]) || false;
 
-  if (!req.headers || !contentType) {
+  if (!contentType) {
     throw new Error(`Content type is not sent in header 'content-type'`);
   }
 
@@ -64,11 +63,11 @@ const validateRequest = (req: HttpRequest) => {
   }
 };
 
-const uploadPhoto = (
+const uploadPhoto = async (
   req: HttpRequest,
   contentType: string,
   context: Context
-): string => {
+) => {
   // Each chunk of the file is delimited by a special string
   const bodyBuffer = Buffer.from(req.body);
   const boundary = multipart.getBoundary(contentType);
@@ -82,9 +81,9 @@ const uploadPhoto = (
 
   // filename is a required property of the parse-multipart package
   if (parts[0]?.filename)
-    console.log(`Original filename = ${parts[0]?.filename}`);
-  if (parts[0]?.type) console.log(`Content type = ${parts[0]?.type}`);
-  if (parts[0]?.data?.length) console.log(`Size = ${parts[0]?.data?.length}`);
+  context.log(`Original filename = ${parts[0]?.filename}`);
+  if (parts[0]?.type) context.log(`Content type = ${parts[0]?.type}`);
+  if (parts[0]?.data?.length) context.log(`Size = ${parts[0]?.data?.length}`);
 
   // check for allowed file type
   const isAllowedContentType = ALLOWED_CONTENT_TYPES.includes(parts[0]?.type);
@@ -101,20 +100,39 @@ const uploadPhoto = (
 
   context.bindings.storage = parts[0]?.data;
 
-  return `https://roboticastorage.blob.core.windows.net/${req.query?.robotName}/${req.query?.filename}`;
+  return `https://${getStorageAccountName() || 'rgroboticab733'}.blob.core.windows.net/${
+    req.query?.robotName
+  }/${req.query?.filename}`;
 };
 
 const gatherComputerVisionResult = async (filePath: string) => {
-  const key = process.env["CognitiveApiKey"]; // not filled in?
-  const endpoint = process.env["CognitiveApiUrl"]; // not filled in?
+  const key = process.env["COGNITIVE_API_KEY"];
+  const endpoint = process.env["COGNITIVE_API_URL"];
 
   const computerVisionClient = new ComputerVisionClient(
-    // @ts-ignore
     new ApiKeyCredentials({ inHeader: { "Ocp-Apim-Subscription-Key": key } }),
     endpoint
   );
 
   return computerVisionClient.detectObjects(filePath);
+};
+
+// Parses a config string to an object (Test=123;AnotherTest=aaa -> {Test:'123',AnotherTest:'aaa'})
+const parseConfigString = (configStr: string): Record<string, string> => {
+  return configStr
+    .split(";")
+    .reduce((settings: Record<string, string>, setting: string) => {
+      const [key, value] = setting.split("=");
+      return {
+        ...settings,
+        [key]: value,
+      };
+    }, {});
+};
+
+const getStorageAccountName = () => {
+  const storageConfig = parseConfigString(process?.env?.AzureWebJobsStorage);
+  return storageConfig.AccountName;
 };
 
 const httpTrigger: AzureFunction = validateAndStorePicture;
