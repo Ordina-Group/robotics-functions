@@ -22,9 +22,11 @@ export const uploadAndValidatePicture: AzureFunction = async function (
       config
     );
 
+    context.log(JSON.stringify(filePath));
+
     context.log(`Upload complete, image should be accessible on ${filePath}`);
 
-    const result = await gatherComputerVisionResult(filePath, config);
+    const result = await gatherComputerVisionResult(filePath.url, config);
 
     context.res.body = result;
   } catch (err) {
