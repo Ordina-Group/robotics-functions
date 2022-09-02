@@ -1,4 +1,4 @@
-# Robotica Picture Validation
+# Robotics Picture Validation
 
 Based on https://docs.microsoft.com/en-us/azure/developer/javascript/how-to/with-web-app/azure-function-file-upload
 
@@ -14,7 +14,7 @@ Based on https://docs.microsoft.com/en-us/azure/developer/javascript/how-to/with
 curl -X POST \
     -F 'filename=@robot.jpg' \
     -H 'Content-Type: image/jpg' \
-    'http://localhost:7071/api/robotica-picture-validation?filename=robot.jpg&robotName=robot1' --verbose
+    'http://localhost:7071/api/robotics-picture-validation?filename=robot.jpg&robotName=robot1' --verbose
 ```
 
 ## Production
