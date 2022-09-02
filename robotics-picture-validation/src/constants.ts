@@ -5,6 +5,8 @@ export const MBYTE = 1024 * KBYTE;
 export const ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png"];
 export const MAX_FILE_SIZE = 6 * MBYTE;
 
+export const DEFAULT_STORAGE_ACCOUNT_NAME = "stroboticsjohnny58314";
+
 export const REQUIRED_ENV_VARIABLES = [
   "AzureWebJobsStorage",
   "COGNITIVE_API_KEY",

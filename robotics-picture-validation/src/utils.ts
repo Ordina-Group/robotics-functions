@@ -1,4 +1,5 @@
 import { HttpRequest } from "@azure/functions";
+import { DEFAULT_STORAGE_ACCOUNT_NAME } from "./constants";
 
 export const validateRequest = (req: HttpRequest) => {
   if (!req.query?.robotName) {
@@ -38,5 +39,5 @@ export const parseConfigString = (
 
 export const getStorageAccountName = () => {
   const storageConfig = parseConfigString(process?.env?.AzureWebJobsStorage);
-  return storageConfig.AccountName;
+  return storageConfig.AccountName || DEFAULT_STORAGE_ACCOUNT_NAME;
 };
