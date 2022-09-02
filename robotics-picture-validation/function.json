@@ -20,5 +20,5 @@
       "connection": "AzureWebJobsStorage"
     }
   ],
-  "scriptFile": "../dist/robotica-picture-validation/index.js"
+  "scriptFile": "../dist/robotics-picture-validation/index.js"
 }
