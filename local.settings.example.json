@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "Environment": "Development",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COGNITIVE_API_URL": "https://westeurope.api.cognitive.microsoft.com/",
+    "COGNITIVE_API_KEY": "???"
+  }
+}

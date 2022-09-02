@@ -15,11 +15,15 @@ const validateAndStorePicture: AzureFunction = async function (
   context: Context,
   req: HttpRequest
 ): Promise<any> {
-  context.log("upload HTTP trigger function processed a request.");
-
   try {
+    validateEnv();
     validateRequest(req);
-    const filePath = await uploadPhoto(req, req.headers["content-type"], context);
+
+    const filePath = await uploadPhoto(
+      req,
+      req.headers["content-type"],
+      context
+    );
     const result = await gatherComputerVisionResult(filePath);
 
     context.res.body = result;
@@ -30,6 +34,20 @@ const validateAndStorePicture: AzureFunction = async function (
     context.res.status = HTTP_CODES.INTERNAL_SERVER_ERROR;
   }
   return context.res;
+};
+
+const validateEnv = () => {
+  const requiredVariables = [
+    "AzureWebJobsStorage",
+    "COGNITIVE_API_KEY",
+    "COGNITIVE_API_URL",
+  ];
+
+  requiredVariables.forEach((varName) => {
+    if (!process?.env?.[varName]) {
+      throw new Error(`Required environment variable "${varName}" is not set!`);
+    }
+  });
 };
 
 const validateRequest = (req: HttpRequest) => {
@@ -81,7 +99,7 @@ const uploadPhoto = async (
 
   // filename is a required property of the parse-multipart package
   if (parts[0]?.filename)
-  context.log(`Original filename = ${parts[0]?.filename}`);
+    context.log(`Original filename = ${parts[0]?.filename}`);
   if (parts[0]?.type) context.log(`Content type = ${parts[0]?.type}`);
   if (parts[0]?.data?.length) context.log(`Size = ${parts[0]?.data?.length}`);
 
@@ -100,9 +118,9 @@ const uploadPhoto = async (
 
   context.bindings.storage = parts[0]?.data;
 
-  return `https://${getStorageAccountName() || 'rgroboticab733'}.blob.core.windows.net/${
-    req.query?.robotName
-  }/${req.query?.filename}`;
+  return `https://${
+    getStorageAccountName() || "rgroboticab733"
+  }.blob.core.windows.net/${req.query?.robotName}/${req.query?.filename}`;
 };
 
 const gatherComputerVisionResult = async (filePath: string) => {
