@@ -15,7 +15,7 @@
     {
       "name": "storage",
       "type": "blob",
-      "path": "{robotName}/{filename}",
+      "path": "pictures/{robotName}/{filename}",
       "direction": "out",
       "connection": "AzureWebJobsStorage"
     }

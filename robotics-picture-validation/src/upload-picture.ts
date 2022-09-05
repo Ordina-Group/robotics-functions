@@ -50,7 +50,7 @@ export const uploadPicture = async (
       return `http://127.0.0.1:10000/${pictureName}`;
     }
 
-    return `https://${config.storage.accountName}.blob.core.windows.net/${pictureName}`;
+    return `https://${config.storage.accountName}.blob.core.windows.net/pictures/${pictureName}`;
   };
 
   return getPictureUrl();
