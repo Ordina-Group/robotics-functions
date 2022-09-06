@@ -1,8 +1,5 @@
 import { AzureFunction } from "@azure/functions";
-import {
-  ContainerClient,
-  StorageSharedKeyCredential,
-} from "@azure/storage-blob";
+import { BlobServiceClient } from "@azure/storage-blob";
 import { randomUUID } from "crypto";
 
 const httpTrigger: AzureFunction = async (context, req) => {
@@ -12,9 +9,8 @@ const httpTrigger: AzureFunction = async (context, req) => {
   const contentType = req.headers["content-type"];
   const fileSize = req.body.length || req.headers["content-length"];
 
-  const sharedKeyCredential = new StorageSharedKeyCredential(
-    account,
-    accountKey
+  const blobServiceClient = BlobServiceClient.fromConnectionString(
+    process.env.AzureWebJobsStorage
   );
 
   const ext = contentType === "image/jpeg" ? "jpg" : "png";
@@ -22,10 +18,7 @@ const httpTrigger: AzureFunction = async (context, req) => {
   context.log("content type:", contentType);
 
   const containerName = `pictures/${req.query?.robotName}`;
-  const containerClient = new ContainerClient(
-    `https://${account}.blob.core.windows.net/${containerName}`,
-    sharedKeyCredential
-  );
+  const containerClient = blobServiceClient.getContainerClient(containerName);
 
   const bodyBase64 = req.body;
   const content = Buffer.from(bodyBase64, "base64");
