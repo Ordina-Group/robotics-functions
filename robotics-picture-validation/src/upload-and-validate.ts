@@ -18,7 +18,7 @@ export const uploadAndValidatePicture: AzureFunction = async function (
     const filePath = await uploadPicture(
       req.body,
       req.headers["content-type"],
-      req.params.robotName,
+      req.query?.robotName,
       config
     );
 
