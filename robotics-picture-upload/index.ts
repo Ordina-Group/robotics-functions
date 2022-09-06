@@ -3,9 +3,6 @@ import { BlobServiceClient } from "@azure/storage-blob";
 import { randomUUID } from "crypto";
 
 const httpTrigger: AzureFunction = async (context, req) => {
-  const account = process.env.ACCOUNT_NAME;
-  const accountKey = process.env.ACCOUNT_KEY;
-
   const contentType = req.headers["content-type"];
   const fileSize = req.body.length || req.headers["content-length"];
 
