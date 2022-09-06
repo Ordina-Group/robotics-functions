@@ -29,7 +29,6 @@ const httpTrigger: AzureFunction = async (context, req) => {
 
   const bodyBase64 = req.body;
   const content = Buffer.from(bodyBase64, "base64");
-  //   const content = Buffer.from(req.body, "utf-8").toString();
 
   const blobName = `${randomUUID()}.${ext}`;
   const blockBlobClient = containerClient.getBlockBlobClient(blobName);
@@ -43,9 +42,8 @@ const httpTrigger: AzureFunction = async (context, req) => {
     uploadBlobResponse.requestId
   );
 
-  context.res.status = 200;
   context.res.body = {
-    result: uploadBlobResponse.requestId,
+    pictureUrl: `${containerClient.url}/${blobName}`,
   };
 
   return context.res;
