@@ -21,7 +21,9 @@ export const gatherAndValidateComputerVisionResult = async (
 
   const { objects } = await computerVisionClient.detectObjects(filePath);
 
-  logger(JSON.stringify(objects));
+  logger(
+    `Image analysis complete. Detected objects: ${JSON.stringify(objects)}`
+  );
 
   return validateComputerVisionResult(objects, config);
 };

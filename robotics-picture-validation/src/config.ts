@@ -15,6 +15,7 @@ export type FunctionConfig = {
   };
   gameServer: {
     url: string;
+    skipUpdate: boolean;
   };
 };
 
@@ -56,6 +57,7 @@ export const getFunctionConfig = (): FunctionConfig => {
       url:
         process.env["GAME_SERVER_API_URL"] ||
         "https://robotics-ws-gamemanager.azurewebsites.net/api",
+      skipUpdate: process.env["GAME_SERVER_SKIP_UPDATE"] === "true",
     },
   };
 };

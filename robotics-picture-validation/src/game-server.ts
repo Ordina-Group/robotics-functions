@@ -18,11 +18,18 @@ export const postValidationResult = async ({
   config,
   logger,
 }: ValidationResult) => {
+  if (config.gameServer.skipUpdate) {
+    logger(
+      `Skipped Game Server update because it's disabled in "config.gameServer.skipUpdate"`
+    );
+    return;
+  }
+
   const params = [
     ["robotName", robotName],
     ["liveStream", liveStream],
     ["lastPhoto", pictureUrl],
-    ["score", isValidGuess],
+    ["score", isValidGuess ? 1 : 0],
   ];
   const query = params.map((param) => param.join("=")).join("&");
   const url = `${config.gameServer.url}/updateRobot?${query}`;
