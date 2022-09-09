@@ -29,7 +29,7 @@ export const postValidationResult = async ({
     ["robotName", robotName],
     ["liveStream", liveStream],
     ["lastPhoto", pictureUrl],
-    ["score", isValidGuess ? 1 : 0],
+    ["score", isValidGuess],
   ];
   const query = params.map((param) => param.join("=")).join("&");
   const url = `${config.gameServer.url}/updateRobot?${query}`;
