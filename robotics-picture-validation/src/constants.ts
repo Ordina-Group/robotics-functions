@@ -11,5 +11,5 @@ export const REQUIRED_ENV_VARIABLES = [
   "AzureWebJobsStorage",
   "COGNITIVE_API_KEY",
   "COGNITIVE_API_URL",
-  "NODE_ENV",
+  "STORAGE_CONTAINER_NAME",
 ];

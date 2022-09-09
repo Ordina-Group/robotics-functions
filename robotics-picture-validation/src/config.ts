@@ -1,14 +1,17 @@
 import { REQUIRED_ENV_VARIABLES } from "./constants";
-import { getStorageAccountName } from "./utils";
 
 export type FunctionConfig = {
-  environment: "development" | "production";
   cognitive: {
     key: string;
     endpoint: string;
+    detections: {
+      validObjects: string[];
+      minConfidence: number;
+    };
   };
   storage: {
-    accountName: string;
+    containerName: string;
+    connectionString: string;
   };
 };
 
@@ -34,14 +37,17 @@ export const getFunctionConfig = (): FunctionConfig => {
   validateEnv();
 
   return {
-    environment:
-      process.env["NODE_ENV"] === "development" ? "development" : "production",
     cognitive: {
       key: process.env["COGNITIVE_API_KEY"],
       endpoint: process.env["COGNITIVE_API_URL"],
+      detections: {
+        validObjects: ["car"],
+        minConfidence: 0.6,
+      },
     },
     storage: {
-      accountName: getStorageAccountName(),
+      containerName: process.env["STORAGE_CONTAINER_NAME"],
+      connectionString: process.env["AzureWebJobsStorage"],
     },
   };
 };
