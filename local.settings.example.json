@@ -4,8 +4,11 @@
     "Environment": "Development",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "node",
-    "NODE_ENV": "development",
     "COGNITIVE_API_URL": "https://westeurope.api.cognitive.microsoft.com/",
-    "COGNITIVE_API_KEY": "???"
+    "COGNITIVE_API_KEY": "???",
+    "WEBSITE_NODE_DEFAULT_VERSION": "14",
+    "STORAGE_CONTAINER_NAME": "pictures",
+    "GAME_SERVER_API_URL": "https://robotics-ws-gamemanager.azurewebsites.net/api",
+    "GAME_SERVER_SKIP_UPDATE": "false"
   }
 }
