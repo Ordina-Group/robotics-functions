@@ -13,6 +13,9 @@ export type FunctionConfig = {
     containerName: string;
     connectionString: string;
   };
+  gameServer: {
+    url: string;
+  };
 };
 
 const validateEnv = () => {
@@ -48,6 +51,11 @@ export const getFunctionConfig = (): FunctionConfig => {
     storage: {
       containerName: process.env["STORAGE_CONTAINER_NAME"],
       connectionString: process.env["AzureWebJobsStorage"],
+    },
+    gameServer: {
+      url:
+        process.env["GAME_SERVER_API_URL"] ||
+        "https://robotics-ws-gamemanager.azurewebsites.net/api",
     },
   };
 };

@@ -17,6 +17,7 @@
     "@types/parse-multipart": "^1.0.0",
     "http-status-enum": "^1.0.2",
     "ms-rest-azure": "^3.0.2",
+    "node-fetch": "^2.1.1",
     "parse-multipart": "^1.0.4"
   },
   "devDependencies": {

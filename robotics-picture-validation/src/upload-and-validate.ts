@@ -5,6 +5,7 @@ import { uploadPicture } from "./upload-picture";
 import { validateRequest } from "./utils";
 import { gatherAndValidateComputerVisionResult } from "./computer-vision";
 import { getFunctionConfig } from "./config";
+import { postValidationResult } from "./game-server";
 
 export const uploadAndValidatePicture: AzureFunction = async function (
   context: Context,
@@ -14,26 +15,33 @@ export const uploadAndValidatePicture: AzureFunction = async function (
 
   try {
     const config = getFunctionConfig();
+    const robotName = req.query.robotName;
+    const liveStream = req.query.liveStream;
 
     validateRequest(req);
 
-    const filePath = await uploadPicture({
+    const pictureUrl = await uploadPicture({
       requestContentType: req.headers["content-type"],
-      robotName: req.query.robotName,
       fileBuffer: Buffer.from(req.body),
+      robotName,
       config,
       logger,
     });
 
     const isValidGuess = await gatherAndValidateComputerVisionResult(
-      filePath,
+      pictureUrl,
       config,
       logger
     );
 
-    logger(`Score: ${isValidGuess}`);
-
-    // POST to gameserver
+    await postValidationResult({
+      robotName,
+      liveStream,
+      isValidGuess,
+      pictureUrl,
+      config,
+      logger,
+    });
   } catch (err) {
     logger.error(err.message);
 
