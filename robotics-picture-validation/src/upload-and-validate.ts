@@ -20,6 +20,8 @@ export const uploadAndValidatePicture: AzureFunction = async function (
 
     validateRequest(req);
 
+    logger(`Starting upload and validate flow for robotName "${robotName}"...`);
+
     const pictureUrl = await uploadPicture({
       requestContentType: req.headers["content-type"],
       fileBuffer: Buffer.from(req.body),
