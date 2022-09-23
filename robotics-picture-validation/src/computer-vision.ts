@@ -37,10 +37,10 @@ const validateComputerVisionResult = (
 
   return objects.some(({ object, confidence, parent }) => {
     const isObjectValidGuess = isValidGuess(object, confidence);
-    const isParentObjectValidGuess = isValidGuess(
-      parent.object,
-      parent.confidence
-    );
+    const isParentObjectValidGuess =
+      parent && parent.object
+        ? isValidGuess(parent.object, parent.confidence)
+        : false;
 
     return isObjectValidGuess || isParentObjectValidGuess;
   });
