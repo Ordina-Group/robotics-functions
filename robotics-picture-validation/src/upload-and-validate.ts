@@ -34,7 +34,12 @@ export const uploadAndValidatePicture: AzureFunction = async function (
       pictureUrl,
       config,
       logger
-    );
+    ).catch((error) => {
+      // when the validation fails we only log the error and assume it is an invalid guess
+      // to be able to update the gameserver as it could be request limited at this point (using the free tier of Azure CS)
+      logger.error(error.message);
+      return false;
+    });
 
     await postValidationResult({
       robotName,
