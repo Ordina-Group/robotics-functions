@@ -100,3 +100,6 @@ __azurite_db*__.json
 azureStorage
 
 .vscode
+
+# we use yarn but az keeps using npm install in the build step
+package-lock.json
